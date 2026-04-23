@@ -18,9 +18,16 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("/static/css/**").addResourceLocations("/static/css/");
-        registry.addResourceHandler("/static/js/**").addResourceLocations("/static/js/");
-        registry.addResourceHandler("/css/**").addResourceLocations("/css/");
-        registry.addResourceHandler("/js/**").addResourceLocations("/js/");
+        // 1. Sabse zaroori: Ye line saari static files (CSS/JS/Images) ko handle karegi
+        registry.addResourceHandler("/static/**")
+                .addResourceLocations("/static/");
+
+        // 2. Agar aapki HTML files webapp folder ke root mein hain
+        registry.addResourceHandler("/*.html")
+                .addResourceLocations("/");
+        
+        // 3. Fallback handlers (Security ke liye)
+        registry.addResourceHandler("/css/**").addResourceLocations("/static/css/");
+        registry.addResourceHandler("/js/**").addResourceLocations("/static/js/");
     }
 }

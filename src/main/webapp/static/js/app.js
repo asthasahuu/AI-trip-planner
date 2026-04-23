@@ -22,13 +22,8 @@
 // ============================================================
 //  API BASE URL — auto-detects context path
 // ============================================================
-var API = (function () {
-    var path = window.location.pathname;
-    path = path.replace(/\/(index|login|signup|create-trip|result|my-trips)\.html.*$/, '');
-    path = path.replace(/\/$/, '');
-    return path + '/api';
-}());
-
+// Purana 25-30 wala block hata dein aur ye ek line likhein
+const API = window.location.origin + (window.location.pathname.includes('/trip-planner') ? '/trip-planner/api' : '/api');
 
 // ============================================================
 //  HELPERS
