@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%23f97316'/><text y='70' x='50' text-anchor='middle' font-size='60' font-family='sans-serif'>✈</text></svg>">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Trip Planner</title>
+  <link rel="stylesheet" href="/trip-planner/static/css/style.css">
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar" id="navbar">
+  <a class="nav-logo" href="index.html">
+    <div class="nav-logo-icon">✈</div>
+    <span>AI Trip Planner</span>
+  </a>
+  <div class="nav-right" id="nav-right">
+    <a href="login.html"  class="btn btn-outline">Login In</a>
+    <a href="signup.html" class="btn btn-dark">Get Started Free</a>
+  </div>
+</nav>
+
+<!-- TOAST -->
+<div id="toast-host"></div>
+
+<!-- LOADING -->
+<div class="loading-overlay" id="loader">
+  <div class="loader-ring"><div class="loader-icon">✈</div></div>
+  <div class="loader-title" id="loader-title">Creating your account...</div>
+  <div class="loader-sub"   id="loader-sub">Just a moment</div>
+</div>
+
+<!-- AUTH FORM -->
+<div class="auth-page">
+  <div class="auth-card">
+
+    <!-- Banner -->
+    <div class="auth-banner">
+      <div class="auth-brand">
+        <div class="auth-brand-icon">🌍</div>
+        <div class="auth-brand-title">Join AI Trip Planner</div>
+        <div class="auth-brand-sub">Create your free account and start exploring</div>
+      </div>
+    </div>
+
+    <!-- Form body -->
+    <div class="auth-body">
+
+      <div class="form-error" id="signup-error">
+        <span>⚠&nbsp;</span><span></span>
+      </div>
+
+      <form id="signup-form" novalidate>
+
+        <div class="field">
+          <label class="field-label" for="s-name">Full Name</label>
+          <input class="field-input" type="text" id="s-name"
+            name="name" placeholder="Your full name" autocomplete="name" required>
+        </div>
+
+        <div class="field">
+          <label class="field-label" for="s-email">Email Address</label>
+          <input class="field-input" type="email" id="s-email"
+            name="email" placeholder="you@example.com" autocomplete="email" required>
+        </div>
+
+        <div class="field">
+          <label class="field-label" for="s-password">Password</label>
+          <input class="field-input" type="password" id="s-password"
+            name="password" placeholder="Minimum 6 characters" autocomplete="new-password" required>
+        </div>
+
+        <div class="field">
+          <label class="field-label" for="s-confirm">Confirm Password</label>
+          <input class="field-input" type="password" id="s-confirm"
+            name="confirm" placeholder="Repeat your password" autocomplete="new-password" required>
+        </div>
+
+        <button type="submit" class="btn btn-dark btn-full btn-lg"
+          id="btn-signup" style="margin-top:4px">
+          Create Account →
+        </button>
+      </form>
+
+      <div class="auth-link" style="margin-top:20px">
+        Already have an account? <a href="login.html">Sign in</a>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script src="/trip-planner/static/js/app.js"></script>
+<script>
+initSignupPage();
+
+function checkPassStrength(val) {
+    var wrap = document.getElementById('pass-strength-wrap');
+    var bar  = document.getElementById('pass-strength-bar');
+    var text = document.getElementById('pass-strength-text');
+    if (!wrap) return;
+
+    if (!val) { wrap.style.display='none'; return; }
+    wrap.style.display = 'block';
+
+    var score = 0;
+    if (val.length >= 8)          score++;
+    if (/[A-Z]/.test(val))        score++;
+    if (/[a-z]/.test(val))        score++;
+    if (/[0-9]/.test(val))        score++;
+    if (/[^A-Za-z0-9]/.test(val)) score++;
+
+    var levels = [
+        { w:'20%',  color:'#ef4444', label:'Very Weak' },
+        { w:'40%',  color:'#f97316', label:'Weak' },
+        { w:'60%',  color:'#eab308', label:'Fair' },
+        { w:'80%',  color:'#22c55e', label:'Strong' },
+        { w:'100%', color:'#16a34a', label:'Very Strong ✓' }
+    ];
+    var lvl = levels[score - 1] || levels[0];
+    bar.style.width      = lvl.w;
+    bar.style.background = lvl.color;
+    text.style.color     = lvl.color;
+    text.textContent     = lvl.label;
+}
+</script>
+</body>
+</html>

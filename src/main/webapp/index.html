@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%23f97316'/><text y='70' x='50' text-anchor='middle' font-size='60' font-family='sans-serif'>✈</text></svg>">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Trip Planner</title>
+  <link rel="stylesheet" href="/trip-planner/static/css/style.css">
+</head>
+<body>
+
+<!-- NAVBAR — JS renders based on login state -->
+<nav class="navbar" id="navbar">
+  <a class="nav-logo" href="index.html">
+    <div class="nav-logo-icon">✈</div>
+    <span>AI Trip Planner</span>
+  </a>
+  <div class="nav-right" id="nav-right">
+    <!-- Filled by JS below -->
+  </div>
+</nav>
+
+<div id="toast-host"></div>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-badge">🤖 Powered by Gemini AI</div>
+
+  <h1 class="hero-title">
+    Discover Your Next Adventure<br>
+    with <span class="accent">AI:</span> Personalized<br>
+    Itineraries at Your Fingertips
+  </h1>
+
+  <p class="hero-sub">
+    Your personal trip planner creating custom itineraries
+    tailored to your interests, budget, and travel style.
+  </p>
+
+  <!-- Hero buttons — JS updates based on login state -->
+  <div class="hero-btns" id="hero-btns">
+    <a href="signup.html" class="btn btn-dark btn-lg">Get Started, It's Free →</a>
+   <a href="login.html"  class="btn btn-outline btn-lg">Login In</a>
+  </div>
+
+  <div class="hero-stats">
+    <div><div class="stat-val">50K+</div><div class="stat-lbl">Trips Generated</div></div>
+    <div><div class="stat-val">190+</div><div class="stat-lbl">Countries Covered</div></div>
+    <div><div class="stat-val">4.9★</div><div class="stat-lbl">User Rating</div></div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="section gray">
+  <div class="sec-label">Why choose us</div>
+  <h2 class="sec-title">Everything you need for the perfect trip</h2>
+  <p class="sec-sub">From AI-powered planning to interactive maps and navigation — we handle it all.</p>
+  <div class="feat-grid">
+    <div class="feat-card">
+      <div class="feat-icon">🤖</div>
+      <div class="feat-title">AI-Generated Itineraries</div>
+      <div class="feat-desc">Gemini AI creates real, day-by-day plans tailored to your destination, budget, and interests.</div>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon">🗺️</div>
+      <div class="feat-title">Interactive Live Map</div>
+      <div class="feat-desc">Click any place to instantly see it on OpenStreetMap — no page reload required.</div>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon">🧭</div>
+      <div class="feat-title">One-Click Navigation</div>
+      <div class="feat-desc">Open Google Maps navigation for any place with a single tap. Works worldwide.</div>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon">🌍</div>
+      <div class="feat-title">Any Destination</div>
+      <div class="feat-desc">Indore, Goa, Paris, Tokyo, Bali — AI knows real local places everywhere.</div>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon">💰</div>
+      <div class="feat-title">Budget-Aware Plans</div>
+      <div class="feat-desc">Cheap, Moderate, or Luxury — your plan matches your spending style precisely.</div>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon">💾</div>
+      <div class="feat-title">Save &amp; Revisit</div>
+      <div class="feat-desc">All trips saved to your account. Access any past itinerary with its full map anytime.</div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="section">
+  <div class="sec-label">How it works</div>
+  <h2 class="sec-title">Plan your trip in 4 simple steps</h2>
+  <p class="sec-sub">No travel expertise needed. Just tell us where you want to go.</p>
+  <div class="steps-grid">
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-title">Create Account</div>
+      <div class="step-desc">Sign up free in seconds. No credit card required.</div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-title">Set Preferences</div>
+      <div class="step-desc">Enter destination, days, budget, travel type, and interests.</div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-title">AI Builds Your Plan</div>
+      <div class="step-desc">Gemini creates a detailed day-by-day itinerary instantly.</div>
+    </div>
+    <div class="step">
+      <div class="step-num">4</div>
+      <div class="step-title">Navigate &amp; Explore</div>
+      <div class="step-desc">View on map, get directions, and go explore — one click.</div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<div class="cta-banner">
+  <div class="cta-inner">
+    <div class="cta-title">Ready to explore the world?</div>
+    <div class="cta-sub">Join thousands of travelers planning smarter with AI — completely free.</div>
+    <a href="signup.html" class="btn-white" id="cta-btn">Start Planning Free →</a>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer class="page-footer">
+  © 2025 AI Trip Planner &nbsp;·&nbsp; Powered by Gemini AI &amp; OpenStreetMap
+</footer>
+
+<script src="/trip-planner/static/js/app.js"></script>
+<script>
+  // Initialize dark mode first
+  initDarkMode();
+
+  // Check login state and update UI
+  (function () {
+    var user = getUser();
+    var navRight  = document.getElementById('nav-right');
+    var heroBtns  = document.getElementById('hero-btns');
+    var ctaBtn    = document.getElementById('cta-btn');
+    var darkBtn   = '<button class="dark-toggle" onclick="toggleDark()" title="Dark mode">🌙</button>';
+
+    if (user) {
+      // ── LOGGED IN ──────────────────────────────────────
+      // Navbar: dark toggle + Create Trip + My Trips + Avatar dropdown
+      var init = (user.userName || 'U').charAt(0).toUpperCase();
+      navRight.innerHTML =
+        darkBtn +
+        '<a href="create-trip.html" class="btn btn-orange">+ Create Trip</a>' +
+        '<a href="my-trips.html"    class="btn btn-outline">My Trips</a>' +
+        '<div class="nav-user">' +
+          '<button class="user-avatar" onclick="navToggle(event)">' + init + '</button>' +
+          '<div class="user-dropdown" id="user-dd">' +
+            '<div class="dd-info">' +
+              '<div class="dd-name">'  + (user.userName || '') + '</div>' +
+              '<div class="dd-email">' + (user.email    || '') + '</div>' +
+            '</div>' +
+            '<div class="dd-hr"></div>' +
+            '<button class="dd-item" onclick="navClose();window.location.href=\'create-trip.html\'">✈️&nbsp; Create Trip</button>' +
+            '<button class="dd-item" onclick="navClose();window.location.href=\'my-trips.html\'">🗺️&nbsp; My Trips</button>' +
+            '<div class="dd-hr"></div>' +
+            '<button class="dd-item red" onclick="logoutFromIndex()">🚪&nbsp; Sign Out</button>' +
+          '</div>' +
+        '</div>';
+
+      // Hero buttons: Create Trip + My Trips
+      if (heroBtns) {
+        heroBtns.innerHTML =
+          '<a href="create-trip.html" class="btn btn-dark btn-lg">+ Create New Trip →</a>' +
+          '<a href="my-trips.html"    class="btn btn-outline btn-lg">My Trips</a>';
+      }
+
+      // CTA button
+      if (ctaBtn) ctaBtn.href = 'create-trip.html';
+
+    } else {
+      // ── NOT LOGGED IN ──────────────────────────────────
+      // Navbar: dark toggle + Sign In + Get Started
+      navRight.innerHTML =
+        darkBtn +
+        '<a href="login.html"  class="btn btn-outline">Login In</a>' + 
+        '<a href="signup.html" class="btn btn-dark">Get Started Free</a>';
+    }
+
+    // Sync dark mode icon
+    updateDarkBtns(localStorage.getItem('tp_theme') || 'light');
+  }());
+
+  // Logout from index page
+  function logoutFromIndex() {
+    fetch(API + '/auth/logout', { method:'POST', credentials:'include' })
+      .catch(function(){});
+    clearUser();
+    // Reload page to show logged-out navbar
+    window.location.reload();
+  }
+</script>
+
+</body>
+</html>

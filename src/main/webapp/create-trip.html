@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%23f97316'/><text y='70' x='50' text-anchor='middle' font-size='60' font-family='sans-serif'>✈</text></svg>">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Trip Planner</title>
+  <link rel="stylesheet" href="/trip-planner/static/css/style.css">
+  <style>
+    /* Travel date section */
+    .date-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+    @media(max-width:600px){ .date-row{ grid-template-columns:1fr; } }
+
+    /* Date type indicator badge */
+    .date-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 600;
+      margin-top: 10px;
+      transition: all .2s;
+    }
+    .date-badge.today     { background: #dcfce7; color: #166534; }
+    .date-badge.soon      { background: #fef9c3; color: #854d0e; }
+    .date-badge.future    { background: #dbeafe; color: #1e40af; }
+    .date-badge.past      { background: #f1f5f9; color: #64748b; }
+    .date-badge.hidden    { display: none; }
+
+    /* Budget summary bar */
+    .budget-preview {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 14px 18px;
+      margin-top: 14px;
+      font-size: 13px;
+      color: var(--text-2);
+      display: none;
+    }
+    .budget-preview.show { display: block; }
+    .budget-preview strong { color: var(--text); }
+  </style>
+</head>
+<body>
+
+<nav class="navbar" id="navbar">
+  <a class="nav-logo" href="index.html">
+    <div class="nav-logo-icon">✈</div>
+    <span>AI Trip Planner</span>
+  </a>
+  <div class="nav-right" id="nav-right"></div>
+</nav>
+
+<div id="toast-host"></div>
+
+<div class="loading-overlay" id="loader">
+  <div class="loader-ring"><div class="loader-icon">✈</div></div>
+  <div class="loader-title" id="loader-title">Planning your trip with AI...</div>
+  <div class="loader-sub"   id="loader-sub">✨ Building your perfect day-by-day itinerary</div>
+</div>
+
+<div class="create-page">
+  <div class="create-wrap">
+
+    <div style="margin-bottom:20px;">
+      <button class="back-btn" onclick="history.length>1?history.back():window.location='my-trips.html'">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><polyline points="12 19 5 12 12 5"/>
+        Back
+      </button>
+    </div>
+    <div class="create-tag">✨ New Trip</div>
+    <h1 class="create-h1">Tell us your travel preferences 🏔️🌴</h1>
+    <p class="create-sub">
+      Provide a few details and Gemini AI will generate a realistic,
+      day-by-day itinerary tailored to your dates, budget, and interests.
+    </p>
+
+    <!-- ── DESTINATION ─────────────────────────────── -->
+    <div class="form-section">
+      <label class="form-q" for="inp-dest">
+        What is your destination of choice?
+      </label>
+      <input class="text-input" type="text" id="inp-dest"
+        placeholder="e.g. Indore, Goa, Paris, Manali, Tokyo..."
+        autocomplete="off">
+    </div>
+
+    <!-- ── DATE + DAYS ────────────────────────────── -->
+    <div class="form-section">
+      <div class="date-row">
+
+        <!-- Travel Start Date -->
+        <div>
+          <label class="form-q" for="inp-date">
+            📅 When do you want to travel?
+          </label>
+          <input class="text-input" type="date" id="inp-date"
+            style="max-width:240px; cursor:pointer;">
+          <!-- Smart date badge shown after date selection -->
+          <div class="date-badge hidden" id="date-badge">
+            <span id="date-badge-icon">📅</span>
+            <span id="date-badge-text">Traveling today</span>
+          </div>
+        </div>
+
+        <!-- Number of Days -->
+        <div>
+          <label class="form-q" for="inp-days">
+            🗓️ How many days?
+          </label>
+          <input class="text-input" type="number" id="inp-days"
+            min="1" max="30" placeholder="e.g. 3" style="max-width:180px">
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ── BUDGET ────────────────────────────────── -->
+    <div class="form-section">
+      <label class="form-q">What is your budget level?</label>
+      <div class="cards-grid cards-grid3" id="budget-grid">
+
+        <div class="sel-card" data-group="budget" data-val="Cheap">
+          <span class="card-icon">🤑</span>
+          <div class="card-name">Cheap</div>
+          <div class="card-desc">Street food, hostels, local buses</div>
+        </div>
+
+        <div class="sel-card" data-group="budget" data-val="Moderate">
+          <span class="card-icon">💰</span>
+          <div class="card-name">Moderate</div>
+          <div class="card-desc">3-star hotels, Ola/Uber, restaurants</div>
+        </div>
+
+        <div class="sel-card" data-group="budget" data-val="Luxury">
+          <span class="card-icon">💎</span>
+          <div class="card-name">Luxury</div>
+          <div class="card-desc">5-star resorts, private transport, fine dining</div>
+        </div>
+
+      </div>
+
+      <!-- Budget estimate shown after selection -->
+      <div class="budget-preview" id="budget-preview">
+        💡 <span id="budget-preview-text">Select budget to see estimate</span>
+      </div>
+    </div>
+
+    <!-- ── TRAVEL TYPE ────────────────────────────── -->
+    <div class="form-section">
+      <label class="form-q">Who do you plan on traveling with?</label>
+      <div class="cards-grid cards-grid2" id="type-grid">
+
+        <div class="sel-card" data-group="type" data-val="Solo">
+          <span class="card-icon">✈️</span>
+          <div class="card-name">Just Me</div>
+          <div class="card-desc">A sole traveler in exploration</div>
+        </div>
+
+        <div class="sel-card" data-group="type" data-val="Couple">
+          <span class="card-icon">🥂</span>
+          <div class="card-name">A Couple</div>
+          <div class="card-desc">Two travelers in tandem</div>
+        </div>
+
+        <div class="sel-card" data-group="type" data-val="Family">
+          <span class="card-icon">🏠</span>
+          <div class="card-name">Family</div>
+          <div class="card-desc">A group of fun-loving adventurers</div>
+        </div>
+
+        <div class="sel-card" data-group="type" data-val="Friends">
+          <span class="card-icon">⛺</span>
+          <div class="card-name">Friends</div>
+          <div class="card-desc">A bunch of thrill-seekers</div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ── INTERESTS ─────────────────────────────── -->
+    <div class="form-section">
+      <label class="form-q">
+        What are your interests?
+        <span style="font-size:14px;font-weight:400;color:var(--text-2)">&nbsp;(select all that apply)</span>
+      </label>
+      <div class="interests-grid">
+
+        <label class="int-chip"><input type="checkbox" value="Food">
+          <span class="int-chip-icon">🍜</span><span class="int-chip-label">Food</span></label>
+
+        <label class="int-chip"><input type="checkbox" value="Adventure">
+          <span class="int-chip-icon">🧗</span><span class="int-chip-label">Adventure</span></label>
+
+        <label class="int-chip"><input type="checkbox" value="Nature">
+          <span class="int-chip-icon">🌿</span><span class="int-chip-label">Nature</span></label>
+
+        <label class="int-chip"><input type="checkbox" value="Culture">
+          <span class="int-chip-icon">🏛️</span><span class="int-chip-label">Culture</span></label>
+
+        <label class="int-chip"><input type="checkbox" value="Shopping">
+          <span class="int-chip-icon">🛍️</span><span class="int-chip-label">Shopping</span></label>
+
+        <label class="int-chip"><input type="checkbox" value="Beaches">
+          <span class="int-chip-icon">🏖️</span><span class="int-chip-label">Beaches</span></label>
+
+        <label class="int-chip"><input type="checkbox" value="History">
+          <span class="int-chip-icon">🏰</span><span class="int-chip-label">History</span></label>
+
+        <label class="int-chip"><input type="checkbox" value="Nightlife">
+          <span class="int-chip-icon">🎶</span><span class="int-chip-label">Nightlife</span></label>
+
+        <label class="int-chip"><input type="checkbox" value="Wellness">
+          <span class="int-chip-icon">🧘</span><span class="int-chip-label">Wellness</span></label>
+
+        <label class="int-chip"><input type="checkbox" value="Photography">
+          <span class="int-chip-icon">📸</span><span class="int-chip-label">Photography</span></label>
+
+      </div>
+    </div>
+
+    <!-- ── GENERATE BAR ───────────────────────────── -->
+    <div class="generate-bar">
+      <div class="gen-hint">🤖 AI will build a realistic, day-by-day human-like plan</div>
+      <button class="btn-generate" id="btn-generate">
+        Generate Trip ✨
+      </button>
+    </div>
+
+  </div>
+</div>
+
+<script src="/trip-planner/static/js/app.js"></script>
+<script>
+  initCreatePage();
+
+  // ── Travel date → smart badge ──────────────────────────
+  var dateInput = document.getElementById('inp-date');
+
+  // Set today as default value
+  var today = new Date();
+  var yyyy  = today.getFullYear();
+  var mm    = String(today.getMonth() + 1).padStart(2, '0');
+  var dd    = String(today.getDate()).padStart(2, '0');
+  dateInput.value = yyyy + '-' + mm + '-' + dd;
+  dateInput.min   = yyyy + '-' + mm + '-' + dd; // can't select past
+  updateDateBadge(dateInput.value);
+
+  dateInput.addEventListener('change', function () {
+    updateDateBadge(this.value);
+  });
+
+  function updateDateBadge(dateStr) {
+    var badge    = document.getElementById('date-badge');
+    var icon     = document.getElementById('date-badge-icon');
+    var text     = document.getElementById('date-badge-text');
+    if (!dateStr || !badge) return;
+
+    var selected = new Date(dateStr);
+    var now      = new Date();
+    now.setHours(0, 0, 0, 0);
+    var diff = Math.round((selected - now) / (1000 * 60 * 60 * 24));
+
+    badge.className = 'date-badge';
+
+    if (diff === 0) {
+      badge.classList.add('today');
+      icon.textContent = '🟢';
+      text.textContent = 'Traveling TODAY — real-time suggestions';
+    } else if (diff <= 7) {
+      badge.classList.add('soon');
+      icon.textContent = '🟡';
+      text.textContent = 'Traveling in ' + diff + ' day' + (diff > 1 ? 's' : '') + ' — near-future planning';
+    } else if (diff <= 90) {
+      badge.classList.add('future');
+      icon.textContent = '🔵';
+      text.textContent = 'Traveling in ' + diff + ' days — advance trip planning';
+    } else {
+      badge.classList.add('future');
+      icon.textContent = '🔵';
+      text.textContent = 'Traveling in ~' + Math.round(diff / 30) + ' months — seasonal planning';
+    }
+  }
+
+  // ── Budget card → show estimate ────────────────────────
+  document.querySelectorAll('[data-group="budget"]').forEach(function (card) {
+    card.addEventListener('click', function () {
+      var val      = card.getAttribute('data-val');
+      var preview  = document.getElementById('budget-preview');
+      var preText  = document.getElementById('budget-preview-text');
+      var daysVal  = parseInt(document.getElementById('inp-days').value) || 3;
+      if (!preview || !preText) return;
+      var estimates = {
+        'Cheap':    'Est. Rs.' + (daysVal * 800)  + '–' + (daysVal * 1200)  + ' total • Hostels + Street food + Buses',
+        'Moderate': 'Est. Rs.' + (daysVal * 3000) + '–' + (daysVal * 5000)  + ' total • 3-star hotels + Restaurants + Ola',
+        'Luxury':   'Est. Rs.' + (daysVal * 10000)+ '–' + (daysVal * 25000) + ' total • 5-star stays + Fine dining + Private cab'
+      };
+      preText.innerHTML = '<strong>' + val + '</strong>: ' + estimates[val];
+      preview.classList.add('show');
+    });
+  });
+
+  // Update estimate when days change
+  document.getElementById('inp-days').addEventListener('input', function () {
+    var activeCard = document.querySelector('[data-group="budget"].active');
+    if (activeCard) activeCard.click();
+  });
+</script>
+
+</body>
+</html>
