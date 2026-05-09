@@ -1,3 +1,12 @@
+![Java](https://img.shields.io/badge/Java_17-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white)
+![Spring MVC](https://img.shields.io/badge/Spring_MVC-6DB33F?style=for-the-badge&logo=spring&logoColor=white)
+![MySQL](https://img.shields.io/badge/MySQL-00000F?style=for-the-badge&logo=mysql&logoColor=white)
+![Gemini AI](https://img.shields.io/badge/Gemini_AI-4285F4?style=for-the-badge&logo=google&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-2CA5E0?style=for-the-badge&logo=docker&logoColor=white)
+
+> 🗺️ Enter any destination → Get AI-generated day-wise itinerary → View every place on interactive map → One click Google Maps navigation
+
+
 # ✈ Voyager AI — Intelligent Travel Planner
 
 A full-stack AI-powered travel planning application built with **Spring MVC**, **MySQL**, **Gemini AI**, and **Leaflet.js**.
